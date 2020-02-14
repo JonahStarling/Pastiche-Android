@@ -5,4 +5,4 @@ The main idea is to allow people to be able to collect and apply an artistic sty
 
 ## Challenges: 
 - First challenge will be using TensorFlow Lite and it's support library to apply an artistic style prediction model on the artwork and then a style transform model on the desired picture.
-- Second challenge will be figuring out best way for users to scan and collect art. Easy way would be special QR codes next to art works. Hard way would be implementing some artwork recognition (probably out of scope for this project).
+- Second challenge will be figuring out best way for users to scan and collect art. Easy way would be to use special QR codes next to art works. Hard way would be implementing some artwork recognition (probably out of scope for this project).
