@@ -178,7 +178,13 @@ class CameraFragment : Fragment() {
     }
 
     private fun switchCameras() {
-        // TODO
+        lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
+            CameraSelector.LENS_FACING_BACK
+        } else {
+            CameraSelector.LENS_FACING_FRONT
+        }
+        // Bind use cases
+        bindCamera()
     }
 
     private fun captureImage() {
