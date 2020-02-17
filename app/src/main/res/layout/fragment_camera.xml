@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="#F0F0F0"
+        android:id="@+id/camera_fragment_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/view_finder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+                android:id="@+id/logo"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:contentDescription="@string/app_name"
+                app:srcCompat="@drawable/pastiche_big_logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+        />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.camera.view.PreviewView
+            android:id="@+id/view_finder"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="40dp"
+            android:background="#222"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toBottomOf="@id/banner"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/camera_capture_button"
+    />
+
+    <!-- Camera control -->
+    <ImageButton
+            android:id="@+id/camera_switch_button"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="52dp"
+            android:layout_marginStart="32dp"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:tint="#222"
+            app:srcCompat="@drawable/ic_switch_cameras"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/alt_switch_camera"
+    />
+
+    <ImageButton
+            android:id="@+id/camera_capture_button"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
+            android:layout_marginBottom="40dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:tint="#222"
+            app:srcCompat="@drawable/ic_camera_shutter"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/alt_capture"
+    />
+
+    <ImageButton
+            android:id="@+id/collection_button"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="52dp"
+            android:layout_marginEnd="32dp"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:tint="#222"
+            app:srcCompat="@drawable/ic_gallery"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/alt_gallery"
+    />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
