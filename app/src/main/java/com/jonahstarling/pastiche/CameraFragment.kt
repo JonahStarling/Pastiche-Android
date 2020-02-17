@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.Rational
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +23,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.File
 import java.lang.Math.*
@@ -35,11 +35,9 @@ class CameraFragment : Fragment() {
     private lateinit var outputDirectory: File
     private lateinit var mainExecutor: Executor
 
-    private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
-    private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -185,6 +183,7 @@ class CameraFragment : Fragment() {
 
     private fun captureImage() {
         // Get a stable reference of the modifiable image capture use case
+        imageCapture?.setTargetAspectRatioCustom(Rational(1, 1))
         imageCapture?.let { imageCapture ->
 
             // Create output file to hold the image
