@@ -4,8 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.Image
+import java.nio.Buffer
 
 class BitmapHelper {
+    
     fun cropCenter(source: Bitmap): Bitmap {
         return when {
             source.width > source.height -> {
@@ -50,4 +52,10 @@ class BitmapHelper {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
+    fun bufferToBitmap(buffer: Buffer, width: Int, height: Int): Bitmap {
+        buffer.rewind()
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap.copyPixelsFromBuffer(buffer)
+        return bitmap
+    }
 }

@@ -16,13 +16,14 @@ import java.nio.channels.FileChannel.MapMode.READ_ONLY
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 import java.io.FileInputStream
-import java.nio.Buffer
 import java.nio.ByteBuffer
 
 class ArtisticStyleTransfer(private val context: Context, private val contentBitmap: Bitmap) {
 
     private val contentImage: TensorImage
         get() = convertContentImageToBitmap()
+
+    private val bitmapHelper = BitmapHelper()
 
     fun demo(): Bitmap? {
         val styleImage = resizeStyleImage()
@@ -82,17 +83,10 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
             interpreter.runForMultipleInputsOutputs(input, output)
 
             val outputByteBuffer = output[0] as ByteBuffer
-            return getBitmap(outputByteBuffer, 384, 384)
+            return bitmapHelper.bufferToBitmap(outputByteBuffer, 384, 384)
         } ?: run {
             return null
         }
-    }
-
-    private fun getBitmap(buffer: Buffer, width: Int, height: Int): Bitmap {
-        buffer.rewind()
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        bitmap.copyPixelsFromBuffer(buffer)
-        return bitmap
     }
 
     private fun loadMappedByteBufferFromAssets(fileName: String): MappedByteBuffer? {
