@@ -3,4 +3,5 @@
     <string name="alt_switch_camera">Switch Camera</string>
     <string name="alt_capture">Capture</string>
     <string name="alt_gallery">Gallery</string>
+    <string name="alt_content_image">Content Image</string>
 </resources>

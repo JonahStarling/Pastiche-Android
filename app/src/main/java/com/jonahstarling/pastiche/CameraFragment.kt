@@ -1,12 +1,15 @@
 package com.jonahstarling.pastiche
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.hardware.Camera.ACTION_NEW_PICTURE
+import android.media.Image
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Bundle
@@ -19,11 +22,13 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.camera.core.*
+import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.android.synthetic.main.fragment_camera.*
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.lang.Math.*
 import java.text.SimpleDateFormat
@@ -150,30 +155,14 @@ class CameraFragment : Fragment() {
     }
 
     /** Define callback that will be triggered after a photo has been taken and saved to disk */
-    private val imageSavedListener = object : ImageCapture.OnImageSavedCallback {
+    private val imageCapturedListener = object : ImageCapture.OnImageCapturedCallback() {
         override fun onError(exception: ImageCaptureException) {
             Log.e(TAG, "Photo capture failed:", exception)
         }
 
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            val photoFile = outputFileResults.savedUri?.let { File(it.path) }
-            // Implicit broadcasts will be ignored for devices running API level >= 24
-            // so if you only target API level 24+ you can remove this statement
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                requireActivity().sendBroadcast(
-                    Intent(ACTION_NEW_PICTURE, outputFileResults.savedUri)
-                )
-            }
-
-            // If the folder selected is an external media directory, this is unnecessary
-            // but otherwise other apps will not be able to access our images unless we
-            // scan them using [MediaScannerConnection]
-            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(photoFile?.extension)
-            MediaScannerConnection.scanFile(
-                context, arrayOf(photoFile?.absolutePath), arrayOf(mimeType), null
-            )
-
-            displayTakenPicture(outputFileResults)
+        override fun onCaptureSuccess(image: ImageProxy) {
+            // Handle image captured
+            displayTakenPicture(image)
         }
     }
 
@@ -207,7 +196,7 @@ class CameraFragment : Fragment() {
                 .build()
 
             // Setup image capture listener which is triggered after photo has been taken
-            imageCapture.takePicture(outputFileOptions, mainExecutor, imageSavedListener)
+            imageCapture.takePicture(mainExecutor, imageCapturedListener)
 
             // Display flash animation to indicate that photo was captured
             view_finder.postDelayed({
@@ -220,10 +209,67 @@ class CameraFragment : Fragment() {
 
     private fun showCollection() {
         // TODO
+        val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
+        val stylizedBitmap = ArtisticStyleTransfer(requireContext(), contentBitmap).demo()
+        content_image.setImageBitmap(stylizedBitmap)
     }
 
-    private fun displayTakenPicture(outputFileResults: ImageCapture.OutputFileResults) {
-        // TODO
+    @SuppressLint("UnsafeExperimentalUsageError")
+    private fun displayTakenPicture(imageProxy: ImageProxy) {
+        imageProxy.image?.let { image ->
+            content_image.visibility = View.VISIBLE
+            val rotatedBitmap = rotateImage(image.toBitmap(), imageProxy.imageInfo.rotationDegrees.toFloat())
+            val croppedBitmap = cropCenter(rotatedBitmap)
+            val finalBitmap = flipImage(croppedBitmap)
+            content_image.setImageBitmap(finalBitmap)
+
+            view_finder.visibility = View.INVISIBLE
+            camera_capture_button.isEnabled = false
+        }
+    }
+
+    private fun cropCenter(source: Bitmap): Bitmap {
+        return when {
+            source.width > source.height -> {
+                Bitmap.createBitmap(
+                    source,
+                    source.width / 2 - source.height / 2,
+                    0,
+                    source.height,
+                    source.height
+                )
+            }
+            source.width < source.height -> {
+                Bitmap.createBitmap(
+                    source,
+                    0,
+                    source.height / 2 - source.width / 2,
+                    source.width,
+                    source.width
+                )
+            }
+            else -> source
+        }
+    }
+
+    private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
+
+    private fun flipImage(source: Bitmap): Bitmap {
+        val matrix = Matrix()
+        matrix.postScale(-1f, 1f, source.width / 2f, source.height / 2f)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
+
+    private fun Image.toBitmap(): Bitmap {
+        val buffer = planes[0].buffer
+        buffer.rewind()
+        val bytes = ByteArray(buffer.capacity())
+        buffer.get(bytes)
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
     companion object {
