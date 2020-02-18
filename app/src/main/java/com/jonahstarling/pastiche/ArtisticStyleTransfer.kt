@@ -16,8 +16,6 @@ import java.nio.channels.FileChannel.MapMode.READ_ONLY
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 import java.io.FileInputStream
-import java.util.*
-
 
 class ArtisticStyleTransfer(private val context: Context, private val contentBitmap: Bitmap) {
 
