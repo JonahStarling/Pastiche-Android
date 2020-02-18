@@ -11,22 +11,10 @@ class BitmapHelper {
     fun cropCenter(source: Bitmap): Bitmap {
         return when {
             source.width > source.height -> {
-                Bitmap.createBitmap(
-                    source,
-                    source.width / 2 - source.height / 2,
-                    0,
-                    source.height,
-                    source.height
-                )
+                Bitmap.createBitmap(source,source.width / 2 - source.height / 2,0, source.height, source.height)
             }
             source.width < source.height -> {
-                Bitmap.createBitmap(
-                    source,
-                    0,
-                    source.height / 2 - source.width / 2,
-                    source.width,
-                    source.width
-                )
+                Bitmap.createBitmap(source,0,source.height / 2 - source.width / 2, source.width, source.width)
             }
             else -> source
         }

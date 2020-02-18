@@ -33,7 +33,7 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
         return if (styleBottleneck != null) {
             runStyleTransferModel(styleBottleneck)
         } else {
-            Log.e("JONAH", "Error getting style bottleneck.")
+            Log.e(TAG, "Error getting style bottleneck.")
             null
         }
     }
@@ -103,9 +103,13 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
             val fileChannel = inputStream.channel
             fileChannel.map(READ_ONLY, startOffset, declaredLength)
         } catch (e: IOException) {
-            Log.e("tfliteSupport", "Error reading model", e)
+            Log.e(TAG, "Error reading model", e)
             null
         }
     }
 
+
+    companion object {
+        private const val TAG = "ArtisticStyleTransfer"
+    }
 }

@@ -25,9 +25,6 @@ import com.jonahstarling.pastiche.tflite.ArtisticStyleTransfer
 import com.jonahstarling.pastiche.utility.BitmapHelper
 import com.jonahstarling.pastiche.utility.CameraHelper
 import kotlinx.android.synthetic.main.fragment_camera.*
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.Executor
 
 class CameraFragment : Fragment() {
