@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.media.Image
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -22,6 +21,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import com.jonahstarling.pastiche.tflite.ArtisticStyleTransfer
+import com.jonahstarling.pastiche.utility.BitmapHelper
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.File
 import java.lang.Math.*
@@ -40,6 +41,8 @@ class CameraFragment : Fragment() {
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
+
+    private var imageCaptured = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +63,8 @@ class CameraFragment : Fragment() {
 
         camera_switch_button.setOnClickListener { switchCameras() }
         camera_capture_button.setOnClickListener { captureImage() }
-        collection_button.setOnClickListener { showCollection() }
+        collection_button.setOnClickListener { convertImage() }
+        delete_capture_button.setOnClickListener { deleteCapture() }
 
         // Determine the output directory
         outputDirectory = MainActivity.getOutputDirectory(requireContext())
@@ -88,7 +92,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    /** Declare and bind preview, capture and analysis use cases */
+    // Declare and bind preview, capture and analysis use cases
     private fun bindCamera() {
 
         // Get screen metrics used to setup camera for full screen resolution
@@ -150,7 +154,7 @@ class CameraFragment : Fragment() {
         return AspectRatio.RATIO_16_9
     }
 
-    /** Define callback that will be triggered after a photo has been taken and saved to disk */
+    // Define callback that will be triggered after a photo has been taken and saved to disk
     private val imageCapturedListener = object : ImageCapture.OnImageCapturedCallback() {
         override fun onError(exception: ImageCaptureException) {
             Log.e(TAG, "Photo capture failed:", exception)
@@ -158,6 +162,7 @@ class CameraFragment : Fragment() {
 
         override fun onCaptureSuccess(image: ImageProxy) {
             // Handle image captured
+            imageCaptured = true
             displayTakenPicture(image)
         }
     }
@@ -203,11 +208,15 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun showCollection() {
-        // TODO
-        val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
-        val stylizedBitmap = ArtisticStyleTransfer(requireContext(), contentBitmap).demo()
-        content_image.setImageBitmap(stylizedBitmap)
+    private fun convertImage() {
+        if (imageCaptured) {
+            val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
+            val stylizedBitmap = ArtisticStyleTransfer(
+                requireContext(),
+                contentBitmap
+            ).demo()
+            content_image.setImageBitmap(stylizedBitmap)
+        }
     }
 
     // TODO: Find a better way to do this
@@ -217,14 +226,50 @@ class CameraFragment : Fragment() {
     private fun displayTakenPicture(imageProxy: ImageProxy) {
         imageProxy.image?.let { image ->
             content_image.visibility = View.VISIBLE
+
+            // Fix the image via rotating, cropping, and flipping (only front camera)
             val rotatedBitmap = bitmapHelper.rotateImage(bitmapHelper.imageToBitmap(image), imageProxy.imageInfo.rotationDegrees.toFloat())
             val croppedBitmap = bitmapHelper.cropCenter(rotatedBitmap)
-            val finalBitmap = bitmapHelper.flipImage(croppedBitmap)
+            val finalBitmap = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
+                bitmapHelper.flipImage(croppedBitmap)
+            } else {
+                croppedBitmap
+            }
             content_image.setImageBitmap(finalBitmap)
 
-            view_finder.visibility = View.INVISIBLE
-            camera_capture_button.isEnabled = false
+            hideCaptureImageButton()
+            showDeleteCaptureButton()
         }
+    }
+
+    private fun deleteCapture() {
+        hideDeleteCaptureButton()
+        showCaptureImageButton()
+
+        content_image.visibility = View.INVISIBLE
+        content_image.setImageBitmap(null)
+    }
+
+    private fun showCaptureImageButton() {
+        camera_capture_button.visibility = View.VISIBLE
+        camera_capture_button.isEnabled = true
+        imageCaptured = false
+    }
+
+    private fun hideCaptureImageButton() {
+        camera_capture_button.visibility = View.INVISIBLE
+        camera_capture_button.isEnabled = false
+    }
+
+    private fun showDeleteCaptureButton() {
+        delete_capture_button.visibility = View.VISIBLE
+        delete_capture_button.isEnabled = true
+    }
+
+    private fun hideDeleteCaptureButton() {
+        delete_capture_button.visibility = View.INVISIBLE
+        delete_capture_button.isEnabled = false
+
     }
 
     companion object {
@@ -240,12 +285,12 @@ class CameraFragment : Fragment() {
         private const val PERMISSIONS_REQUEST_CODE = 10
         private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 
-        /** Helper function used to create a timestamped file */
+        // Helper function used to create a timestamped file
         private fun createFile(baseFolder: File, format: String, extension: String) =
             File(baseFolder, SimpleDateFormat(format, Locale.US)
                 .format(System.currentTimeMillis()) + extension)
 
-        /** Convenience method used to check if all permissions required by this app are granted */
+        // Convenience method used to check if all permissions required by this app are granted
         fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }

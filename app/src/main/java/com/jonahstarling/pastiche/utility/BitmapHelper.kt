@@ -1,4 +1,4 @@
-package com.jonahstarling.pastiche
+package com.jonahstarling.pastiche.utility
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory

@@ -1,9 +1,11 @@
-package com.jonahstarling.pastiche
+package com.jonahstarling.pastiche.tflite
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import com.jonahstarling.pastiche.R
+import com.jonahstarling.pastiche.utility.BitmapHelper
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.image.ops.ResizeOp
@@ -55,7 +57,9 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
             .add(NormalizeOp(0.0f, 1.0f))
             .build()
         var styleImage = TensorImage(DataType.FLOAT32)
-        val styleImageBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.starry_night)
+        val styleImageBitmap = BitmapFactory.decodeResource(context.resources,
+            R.drawable.starry_night
+        )
         styleImage.load(styleImageBitmap)
         styleImage = imageProcessor.process(styleImage)
         return styleImage
