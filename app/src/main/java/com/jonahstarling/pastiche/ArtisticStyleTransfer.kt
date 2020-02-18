@@ -16,6 +16,8 @@ import java.nio.channels.FileChannel.MapMode.READ_ONLY
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ops.ResizeWithCropOrPadOp
 import java.io.FileInputStream
+import java.nio.Buffer
+import java.nio.ByteBuffer
 
 class ArtisticStyleTransfer(private val context: Context, private val contentBitmap: Bitmap) {
 
@@ -37,7 +39,7 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
         val cropSize = Math.min(contentBitmap.width, contentBitmap.height)
         val imageProcessor = ImageProcessor.Builder()
             .add(ResizeWithCropOrPadOp(cropSize, cropSize))
-            .add(ResizeOp(256, 256, ResizeOp.ResizeMethod.BILINEAR))
+            .add(ResizeOp(384, 384, ResizeOp.ResizeMethod.BILINEAR))
             .add(NormalizeOp(0.0f, 1.0f))
             .build()
         var contentImage = TensorImage(DataType.FLOAT32)
@@ -76,13 +78,21 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
             val interpreter = Interpreter(styleTransferModel)
 
             val input = arrayOf(contentImage.tensorBuffer.buffer, styleBottleneck.buffer)
-            val output = mapOf(Pair(0, TensorImage(DataType.FLOAT32)))
+            val output = mapOf(Pair(0, TensorBuffer.createFixedSize(intArrayOf(384, 384, 3), DataType.FLOAT32).buffer))
             interpreter.runForMultipleInputsOutputs(input, output)
 
-            return output[0]?.bitmap
+            val outputByteBuffer = output[0] as ByteBuffer
+            return getBitmap(outputByteBuffer, 384, 384)
         } ?: run {
             return null
         }
+    }
+
+    private fun getBitmap(buffer: Buffer, width: Int, height: Int): Bitmap {
+        buffer.rewind()
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap.copyPixelsFromBuffer(buffer)
+        return bitmap
     }
 
     private fun loadMappedByteBufferFromAssets(fileName: String): MappedByteBuffer? {
