@@ -23,19 +23,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.jonahstarling.pastiche.tflite.ArtisticStyleTransfer
 import com.jonahstarling.pastiche.utility.BitmapHelper
+import com.jonahstarling.pastiche.utility.CameraHelper
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.File
-import java.lang.Math.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executor
 
 class CameraFragment : Fragment() {
 
-    private lateinit var outputDirectory: File
     private lateinit var mainExecutor: Executor
 
     private val bitmapHelper = BitmapHelper()
+    private val cameraHelper = CameraHelper()
 
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
@@ -48,7 +48,6 @@ class CameraFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         if (!hasPermissions(requireContext())) {
-            // Request camera-related permissions
             requestPermissions(PERMISSIONS_REQUIRED, PERMISSIONS_REQUEST_CODE)
         }
 
@@ -61,13 +60,10 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        camera_switch_button.setOnClickListener { switchCameras() }
-        camera_capture_button.setOnClickListener { captureImage() }
-        collection_button.setOnClickListener { convertImage() }
-        delete_capture_button.setOnClickListener { deleteCapture() }
-
-        // Determine the output directory
-        outputDirectory = MainActivity.getOutputDirectory(requireContext())
+        camera_switch_button.setOnClickListener { switchCamerasClicked() }
+        camera_capture_button.setOnClickListener { captureImageClicked() }
+        collection_button.setOnClickListener { convertImageClicked() }
+        delete_capture_button.setOnClickListener { deleteCaptureClicked() }
 
         if (hasPermissions(requireContext())) {
             view_finder.post {
@@ -81,23 +77,22 @@ class CameraFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
-                // Take the user to the success fragment when permission is granted
-                Toast.makeText(context, "Permission request granted", Toast.LENGTH_LONG).show()
                 view_finder.post {
                     bindCamera()
                 }
             } else {
                 Toast.makeText(context, "Permission request denied", Toast.LENGTH_LONG).show()
+                // TODO: Add some message to let user know that the camera is needed
             }
         }
     }
 
-    // Declare and bind preview, capture and analysis use cases
+    // Declare and bind preview and capture use cases
     private fun bindCamera() {
 
         // Get screen metrics used to setup camera for full screen resolution
         val metrics = DisplayMetrics().also { view_finder.display.getRealMetrics(it) }
-        val screenAspectRatio = aspectRatio(metrics.widthPixels, metrics.heightPixels)
+        val screenAspectRatio = cameraHelper.aspectRatio(metrics.widthPixels, metrics.heightPixels)
         val rotation = view_finder.display.rotation
 
         // Bind the CameraProvider to the LifeCycleOwner
@@ -105,37 +100,26 @@ class CameraFragment : Fragment() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(Runnable {
 
-            // CameraProvider
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
+            // Setup the Preview to display to view finder
             preview = Preview.Builder()
-                // We request aspect ratio but no resolution
                 .setTargetAspectRatio(screenAspectRatio)
-                // Set initial target rotation
                 .setTargetRotation(rotation)
                 .build()
 
-            // Default PreviewSurfaceProvider
             preview?.setSurfaceProvider(view_finder.previewSurfaceProvider)
 
-            // ImageCapture
+            // Setup the Image Capture so the user can take a photo
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                // We request aspect ratio but no resolution to match preview config, but letting
-                // CameraX optimize for whatever specific resolution best fits requested capture mode
                 .setTargetAspectRatio(screenAspectRatio)
-                // Set initial target rotation, we will have to call this again if rotation changes
-                // during the lifecycle of this use case
                 .setTargetRotation(rotation)
                 .build()
 
-            // Must unbind the use-cases before rebinding them.
             cameraProvider.unbindAll()
 
             try {
-                // A variable number of use-cases can be passed here -
-                // camera provides access to CameraControl & CameraInfo
                 camera = cameraProvider.bindToLifecycle(
                     this as LifecycleOwner, cameraSelector, preview, imageCapture
                 )
@@ -146,60 +130,37 @@ class CameraFragment : Fragment() {
         }, mainExecutor)
     }
 
-    private fun aspectRatio(width: Int, height: Int): Int {
-        val previewRatio = max(width, height).toDouble() / min(width, height)
-        if (abs(previewRatio - RATIO_4_3_VALUE) <= abs(previewRatio - RATIO_16_9_VALUE)) {
-            return AspectRatio.RATIO_4_3
-        }
-        return AspectRatio.RATIO_16_9
-    }
-
-    // Define callback that will be triggered after a photo has been taken and saved to disk
+    // Define callback that will be triggered after a photo has been captured
     private val imageCapturedListener = object : ImageCapture.OnImageCapturedCallback() {
         override fun onError(exception: ImageCaptureException) {
             Log.e(TAG, "Photo capture failed:", exception)
         }
 
         override fun onCaptureSuccess(image: ImageProxy) {
-            // Handle image captured
             imageCaptured = true
             displayTakenPicture(image)
         }
     }
 
-    private fun switchCameras() {
+    private fun switchCamerasClicked() {
         lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
             CameraSelector.LENS_FACING_BACK
         } else {
             CameraSelector.LENS_FACING_FRONT
         }
-        // Bind use cases
+        // Rebind use cases
         bindCamera()
     }
 
-    private fun captureImage() {
+    private fun captureImageClicked() {
         // Get a stable reference of the modifiable image capture use case
         imageCapture?.setTargetAspectRatioCustom(Rational(1, 1))
         imageCapture?.let { imageCapture ->
 
-            // Create output file to hold the image
-            val photoFile = createFile(outputDirectory, FILENAME, PHOTO_EXTENSION)
-
-            // Setup image capture metadata
-            val metadata = ImageCapture.Metadata().apply {
-
-                // Mirror image when using the front camera
-                isReversedHorizontal = lensFacing == CameraSelector.LENS_FACING_FRONT
-            }
-            // Create output file options to pass to image capture
-            val outputFileOptions = ImageCapture.OutputFileOptions.Builder(photoFile)
-                .setMetadata(metadata)
-                .build()
-
-            // Setup image capture listener which is triggered after photo has been taken
+            // Setup image captured listener which is triggered after photo has been taken
             imageCapture.takePicture(mainExecutor, imageCapturedListener)
 
-            // Display flash animation to indicate that photo was captured
+            // Display a "flash" animation to indicate that photo was captured
             view_finder.postDelayed({
                 view_finder.foreground = ColorDrawable(Color.WHITE)
                 view_finder.postDelayed(
@@ -208,7 +169,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun convertImage() {
+    private fun convertImageClicked() {
         if (imageCaptured) {
             val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
             val stylizedBitmap = ArtisticStyleTransfer(
@@ -242,7 +203,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun deleteCapture() {
+    private fun deleteCaptureClicked() {
         hideDeleteCaptureButton()
         showCaptureImageButton()
 
@@ -274,21 +235,12 @@ class CameraFragment : Fragment() {
 
     companion object {
         private const val TAG = "Pastiche"
-        private const val FILENAME = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val PHOTO_EXTENSION = ".jpg"
-        private const val RATIO_4_3_VALUE = 4.0 / 3.0
-        private const val RATIO_16_9_VALUE = 16.0 / 9.0
 
         private const val ANIMATION_FAST_MILLIS = 50L
         private const val ANIMATION_SLOW_MILLIS = 100L
 
         private const val PERMISSIONS_REQUEST_CODE = 10
         private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
-
-        // Helper function used to create a timestamped file
-        private fun createFile(baseFolder: File, format: String, extension: String) =
-            File(baseFolder, SimpleDateFormat(format, Locale.US)
-                .format(System.currentTimeMillis()) + extension)
 
         // Convenience method used to check if all permissions required by this app are granted
         fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
