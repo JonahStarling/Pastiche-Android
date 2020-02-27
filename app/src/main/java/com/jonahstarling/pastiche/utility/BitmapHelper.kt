@@ -2,7 +2,6 @@ package com.jonahstarling.pastiche.utility
 
 import android.graphics.*
 import android.media.Image
-import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -40,13 +39,8 @@ class BitmapHelper {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     }
 
-    fun bufferToBitmap(buffer: Buffer, width: Int, height: Int): Bitmap {
-        buffer.rewind()
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        bitmap.copyPixelsFromBuffer(buffer)
-        return bitmap
-    }
-
+    // From the TensorFlow Lite Style Transfer Android Demo
+    // https://github.com/tensorflow/examples/tree/master/lite/examples/style_transfer/android
     private fun scaleBitmapAndKeepRatio(
         targetBmp: Bitmap,
         reqHeightInPixels: Int,
@@ -76,6 +70,8 @@ class BitmapHelper {
         )
     }
 
+    // From the TensorFlow Lite Style Transfer Android Demo
+    // https://github.com/tensorflow/examples/tree/master/lite/examples/style_transfer/android
     fun bitmapToByteBuffer(
         bitmapIn: Bitmap,
         width: Int,
@@ -108,6 +104,8 @@ class BitmapHelper {
         return inputImage
     }
 
+    // From the TensorFlow Lite Style Transfer Android Demo
+    // https://github.com/tensorflow/examples/tree/master/lite/examples/style_transfer/android
     fun convertArrayToBitmap(
         imageArray: Array<Array<Array<FloatArray>>>,
         imageWidth: Int,
