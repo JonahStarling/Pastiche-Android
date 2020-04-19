@@ -81,6 +81,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         collection_button.setOnClickListener { onContentSelected() }
         camera_capture_button.setOnClickListener { captureImageTapped() }
         delete_capture_button.setOnClickListener { deleteCaptureTapped() }
+        camera_button.setOnClickListener { returnToCamera() }
 
         if (hasPermissions(requireContext())) {
             view_finder.post {
@@ -181,7 +182,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         }
     }
 
-    private suspend fun convertImageTapped(id: Int) {
+    private suspend fun convertImage(id: Int) {
         if (imageCaptured) {
             withContext(Dispatchers.IO) {
                 contentBitmap?.let {
@@ -221,6 +222,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
             hideFlipCameraButton()
             showArtCollectionButton()
             showDeleteCaptureButton()
+            contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
         }
     }
 
@@ -228,14 +230,17 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         art_thumbnail.setPadding(0, 0, 0 ,0)
         art_thumbnail.setImageResource(id)
         launch {
-            convertImageTapped(id)
+            convertImage(id)
         }
         hideArtGrid()
+        hideCameraButton()
+        showArtCollectionButton()
     }
 
     private fun onContentSelected() {
+        hideArtCollectionButton()
         showArtGrid()
-        contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
+        showCameraButton()
     }
     
     private fun helpTapped() {
@@ -246,15 +251,23 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         hideArtGrid()
         hideDeleteCaptureButton()
         hideArtCollectionButton()
+        hideCameraButton()
         showFlipCameraButton()
         showCaptureImageButton()
 
         content_image.visibility = View.INVISIBLE
         content_image.setImageBitmap(null)
-        user_thumbnail.setPadding(10, 10, 10, 10)
-        user_thumbnail.setImageResource(R.drawable.ic_person_white)
-        art_thumbnail.setPadding(10, 10, 10, 10)
+        val paddingDp = (resources.displayMetrics.density * 10).toInt()
+        art_thumbnail.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
         art_thumbnail.setImageResource(R.drawable.ic_gallery_white)
+        user_thumbnail.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
+        user_thumbnail.setImageResource(R.drawable.ic_person_white)
+    }
+
+    private fun returnToCamera() {
+        hideArtGrid()
+        hideCameraButton()
+        showArtCollectionButton()
     }
 
     private fun showCaptureImageButton() {
@@ -304,6 +317,16 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
 
     private fun hideArtGrid() {
         art_grid.visibility = View.GONE
+    }
+
+    private fun showCameraButton() {
+        camera_button.visibility = View.VISIBLE
+        camera_button.isEnabled = true
+    }
+
+    private fun hideCameraButton() {
+        camera_button.visibility = View.GONE
+        camera_button.isEnabled = false
     }
 
     companion object {
