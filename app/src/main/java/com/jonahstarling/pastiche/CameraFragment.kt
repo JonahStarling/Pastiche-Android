@@ -70,7 +70,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        artworkAdapter = ArtworkAdapter(this.requireContext(), ArtworkRepository.localArtworks())
+        artworkAdapter = ArtworkAdapter(this.requireContext(), ArtworkRepository.localArtworks)
         artworkAdapter.artAdapterListener = this
         artworkLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.HORIZONTAL, false)
         art_grid.adapter = artworkAdapter
