@@ -9,7 +9,7 @@
 
     <ImageView
             android:id="@+id/logo"
-            android:layout_width="match_parent"
+            android:layout_width="134dp"
             android:layout_height="60dp"
             android:layout_margin="24dp"
             android:contentDescription="@string/app_name"
@@ -17,14 +17,65 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintVertical_bias="0.0"
             app:layout_constraintBottom_toTopOf="@+id/view_finder"
             />
+
+    <ImageView
+            android:id="@+id/userThumbnail"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:background="#222"
+            android:contentDescription="@string/user_thumbnail"
+            app:srcCompat="@drawable/pastiche_big_logo"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/plusSign"
+            app:layout_constraintBottom_toTopOf="@+id/view_finder"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintVertical_bias="0.0"
+            />
+
+    <ImageView
+            android:id="@+id/plusSign"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/plus"
+            android:tint="#222"
+            app:srcCompat="@drawable/ic_add"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/artThumbnail"
+            app:layout_constraintBottom_toTopOf="@+id/view_finder"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintVertical_bias="0.5"
+            />
+
+    <ImageView
+            android:id="@+id/artThumbnail"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="#222"
+            android:contentDescription="@string/art_thumbnail"
+            app:srcCompat="@drawable/pastiche_big_logo"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/view_finder"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintVertical_bias="0.0"
+            />
+
 
     <androidx.camera.view.PreviewView
             android:id="@+id/view_finder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="24dp"
             android:layout_marginTop="24dp"
             android:background="#222"
             app:layout_constraintDimensionRatio="1:1"
@@ -47,6 +98,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="gone"
     />
+
+    <ImageView
+            android:id="@+id/pick_style"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginBottom="24dp"
+            android:minHeight="100dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/pick_a_style_content_description"
+            app:srcCompat="@drawable/pick_a_style"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_finder"
+            />
 
     <!-- Camera control -->
     <ImageButton

@@ -4,4 +4,8 @@
     <string name="alt_capture">Capture</string>
     <string name="alt_gallery">Gallery</string>
     <string name="alt_content_image">Content Image</string>
+    <string name="pick_a_style_content_description">Pick A Style</string>
+    <string name="user_thumbnail">User Thumbnail</string>
+    <string name="plus">Plus</string>
+    <string name="art_thumbnail">Art Thumbnail</string>
 </resources>

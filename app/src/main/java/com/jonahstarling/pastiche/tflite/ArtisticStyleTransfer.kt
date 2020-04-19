@@ -21,7 +21,7 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
 
     fun demo(): Bitmap? {
         val styleImageBitmap = BitmapFactory.decodeResource(context.resources,
-            R.drawable.starry_night
+            R.drawable.bathing_men
         )
         val styleImage = bitmapHelper.bitmapToByteBuffer(styleImageBitmap, 256, 256)
         val styleBottleneck = runStylePredictionModel(styleImage)

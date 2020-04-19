@@ -86,7 +86,6 @@ class CameraFragment : Fragment() {
 
     // Declare and bind preview and capture use cases
     private fun bindCamera() {
-
         // Get screen metrics used to setup camera for full screen resolution
         val metrics = DisplayMetrics().also { view_finder.display.getRealMetrics(it) }
         val screenAspectRatio = cameraHelper.aspectRatio(metrics.widthPixels, metrics.heightPixels)
@@ -96,7 +95,6 @@ class CameraFragment : Fragment() {
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(Runnable {
-
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
             // Setup the Preview to display to view finder
@@ -104,7 +102,6 @@ class CameraFragment : Fragment() {
                 .setTargetAspectRatio(screenAspectRatio)
                 .setTargetRotation(rotation)
                 .build()
-
             preview?.setSurfaceProvider(view_finder.previewSurfaceProvider)
 
             // Setup the Image Capture so the user can take a photo
@@ -113,7 +110,6 @@ class CameraFragment : Fragment() {
                 .setTargetAspectRatio(screenAspectRatio)
                 .setTargetRotation(rotation)
                 .build()
-
             cameraProvider.unbindAll()
 
             try {
@@ -123,7 +119,6 @@ class CameraFragment : Fragment() {
             } catch(exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
-
         }, mainExecutor)
     }
 
