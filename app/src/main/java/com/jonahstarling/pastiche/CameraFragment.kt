@@ -189,6 +189,7 @@ class CameraFragment : Fragment() {
                 croppedBitmap
             }
             content_image.setImageBitmap(finalBitmap)
+            user_thumbnail.setImageBitmap(finalBitmap)
 
             hideCaptureImageButton()
             showDeleteCaptureButton()

@@ -23,7 +23,7 @@
             />
 
     <ImageView
-            android:id="@+id/userThumbnail"
+            android:id="@+id/user_thumbnail"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginTop="24dp"
@@ -32,14 +32,14 @@
             app:srcCompat="@drawable/pastiche_big_logo"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/plusSign"
+            app:layout_constraintEnd_toStartOf="@id/plus_sign"
             app:layout_constraintBottom_toTopOf="@+id/view_finder"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintVertical_bias="0.0"
             />
 
     <ImageView
-            android:id="@+id/plusSign"
+            android:id="@+id/plus_sign"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="fitCenter"
@@ -48,14 +48,14 @@
             android:tint="#222"
             app:srcCompat="@drawable/ic_add"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/artThumbnail"
+            app:layout_constraintEnd_toStartOf="@id/art_thumbnail"
             app:layout_constraintBottom_toTopOf="@+id/view_finder"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintVertical_bias="0.5"
             />
 
     <ImageView
-            android:id="@+id/artThumbnail"
+            android:id="@+id/art_thumbnail"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginTop="24dp"
