@@ -21,13 +21,15 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.GridLayoutManager
+import com.jonahstarling.pastiche.data.ArtworkRepository
 import com.jonahstarling.pastiche.tflite.ArtisticStyleTransfer
 import com.jonahstarling.pastiche.utility.BitmapHelper
 import com.jonahstarling.pastiche.utility.CameraHelper
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.util.concurrent.Executor
 
-class CameraFragment : Fragment() {
+class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
 
     private lateinit var mainExecutor: Executor
 
@@ -38,8 +40,10 @@ class CameraFragment : Fragment() {
     private var preview: Preview? = null
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
-
     private var imageCaptured = false
+
+    private lateinit var artworkAdapter: ArtworkAdapter
+    private lateinit var artworkLayoutManager: GridLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +61,15 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        artworkAdapter = ArtworkAdapter(this.requireContext(), ArtworkRepository.localArtworks())
+        artworkAdapter.artAdapterListener = this
+        artworkLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.HORIZONTAL, false)
+        art_grid.adapter = artworkAdapter
+        art_grid.layoutManager = artworkLayoutManager
+
         help_button.setOnClickListener { helpTapped() }
         camera_switch_button.setOnClickListener { switchCamerasTapped() }
         camera_capture_button.setOnClickListener { captureImageTapped() }
-        collection_button.setOnClickListener { convertImageTapped() }
         delete_capture_button.setOnClickListener { deleteCaptureTapped() }
 
         if (hasPermissions(requireContext())) {
@@ -162,13 +171,13 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun convertImageTapped() {
+    private fun convertImageTapped(id: Int) {
         if (imageCaptured) {
             val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
             val stylizedBitmap = ArtisticStyleTransfer(
                 requireContext(),
                 contentBitmap
-            ).demo()
+            ).apply(id)
             content_image.setImageBitmap(stylizedBitmap)
         }
     }
@@ -198,7 +207,15 @@ class CameraFragment : Fragment() {
             hideFlipCameraButton()
             showArtCollectionButton()
             showDeleteCaptureButton()
+            showArtGrid()
         }
+    }
+
+    override fun onArtworkSelected(id: Int) {
+        art_thumbnail.setPadding(0, 0, 0 ,0)
+        art_thumbnail.setImageResource(id)
+        convertImageTapped(id)
+        hideArtGrid()
     }
     
     private fun helpTapped() {
@@ -208,6 +225,7 @@ class CameraFragment : Fragment() {
     private fun deleteCaptureTapped() {
         hideDeleteCaptureButton()
         hideArtCollectionButton()
+        hideArtGrid()
         showFlipCameraButton()
         showCaptureImageButton()
 
@@ -215,6 +233,8 @@ class CameraFragment : Fragment() {
         content_image.setImageBitmap(null)
         user_thumbnail.setPadding(10, 10, 10, 10)
         user_thumbnail.setImageResource(R.drawable.ic_person_white)
+        art_thumbnail.setPadding(10, 10, 10, 10)
+        art_thumbnail.setImageResource(R.drawable.ic_gallery_white)
     }
 
     private fun showCaptureImageButton() {
@@ -256,6 +276,14 @@ class CameraFragment : Fragment() {
     private fun hideArtCollectionButton() {
         collection_button.visibility = View.INVISIBLE
         collection_button.isEnabled = false
+    }
+
+    private fun showArtGrid() {
+        art_grid.visibility = View.VISIBLE
+    }
+
+    private fun hideArtGrid() {
+        art_grid.visibility = View.GONE
     }
 
     companion object {
