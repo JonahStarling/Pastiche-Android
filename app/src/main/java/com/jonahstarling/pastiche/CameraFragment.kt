@@ -57,10 +57,11 @@ class CameraFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        camera_switch_button.setOnClickListener { switchCamerasClicked() }
-        camera_capture_button.setOnClickListener { captureImageClicked() }
-        collection_button.setOnClickListener { convertImageClicked() }
-        delete_capture_button.setOnClickListener { deleteCaptureClicked() }
+        help_button.setOnClickListener { helpTapped() }
+        camera_switch_button.setOnClickListener { switchCamerasTapped() }
+        camera_capture_button.setOnClickListener { captureImageTapped() }
+        collection_button.setOnClickListener { convertImageTapped() }
+        delete_capture_button.setOnClickListener { deleteCaptureTapped() }
 
         if (hasPermissions(requireContext())) {
             view_finder.post {
@@ -134,7 +135,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun switchCamerasClicked() {
+    private fun switchCamerasTapped() {
         lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
             CameraSelector.LENS_FACING_BACK
         } else {
@@ -144,7 +145,7 @@ class CameraFragment : Fragment() {
         bindCamera()
     }
 
-    private fun captureImageClicked() {
+    private fun captureImageTapped() {
         // Get a stable reference of the modifiable image capture use case
         imageCapture?.setTargetAspectRatioCustom(Rational(1, 1))
         imageCapture?.let { imageCapture ->
@@ -161,7 +162,7 @@ class CameraFragment : Fragment() {
         }
     }
 
-    private fun convertImageClicked() {
+    private fun convertImageTapped() {
         if (imageCaptured) {
             val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
             val stylizedBitmap = ArtisticStyleTransfer(
@@ -189,19 +190,31 @@ class CameraFragment : Fragment() {
                 croppedBitmap
             }
             content_image.setImageBitmap(finalBitmap)
+            user_thumbnail.setPadding(0, 0, 0, 0)
             user_thumbnail.setImageBitmap(finalBitmap)
 
+
             hideCaptureImageButton()
+            hideFlipCameraButton()
+            showArtCollectionButton()
             showDeleteCaptureButton()
         }
     }
+    
+    private fun helpTapped() {
+        // TODO: Add Help popup
+    }
 
-    private fun deleteCaptureClicked() {
+    private fun deleteCaptureTapped() {
         hideDeleteCaptureButton()
+        hideArtCollectionButton()
+        showFlipCameraButton()
         showCaptureImageButton()
 
         content_image.visibility = View.INVISIBLE
         content_image.setImageBitmap(null)
+        user_thumbnail.setPadding(10, 10, 10, 10)
+        user_thumbnail.setImageResource(R.drawable.ic_person_white)
     }
 
     private fun showCaptureImageButton() {
@@ -223,7 +236,26 @@ class CameraFragment : Fragment() {
     private fun hideDeleteCaptureButton() {
         delete_capture_button.visibility = View.INVISIBLE
         delete_capture_button.isEnabled = false
+    }
 
+    private fun showFlipCameraButton() {
+        camera_switch_button.visibility = View.VISIBLE
+        camera_switch_button.isEnabled = true
+    }
+
+    private fun hideFlipCameraButton() {
+        camera_switch_button.visibility = View.INVISIBLE
+        camera_switch_button.isEnabled = false
+    }
+
+    private fun showArtCollectionButton() {
+        collection_button.visibility = View.VISIBLE
+        collection_button.isEnabled = true
+    }
+
+    private fun hideArtCollectionButton() {
+        collection_button.visibility = View.INVISIBLE
+        collection_button.isEnabled = false
     }
 
     companion object {

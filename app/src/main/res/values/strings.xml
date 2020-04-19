@@ -8,4 +8,6 @@
     <string name="user_thumbnail">User Thumbnail</string>
     <string name="plus">Plus</string>
     <string name="art_thumbnail">Art Thumbnail</string>
+    <string name="help">Help</string>
+    <string name="definition"><i><b>Noun:</b> An artistic work in a style that imitates that of another work, artist, or period.\n<b>Verb:</b> Imitate the style of (an artist or work).</i></string>
 </resources>
