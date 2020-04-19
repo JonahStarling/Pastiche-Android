@@ -27,11 +27,19 @@ import com.jonahstarling.pastiche.tflite.ArtisticStyleTransfer
 import com.jonahstarling.pastiche.utility.BitmapHelper
 import com.jonahstarling.pastiche.utility.CameraHelper
 import kotlinx.android.synthetic.main.fragment_camera.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executor
+import kotlin.coroutines.CoroutineContext
 
-class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
+class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, CoroutineScope {
 
     private lateinit var mainExecutor: Executor
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 
     private val bitmapHelper = BitmapHelper()
     private val cameraHelper = CameraHelper()
@@ -41,6 +49,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var imageCaptured = false
+    private var contentBitmap: Bitmap? = null
 
     private lateinit var artworkAdapter: ArtworkAdapter
     private lateinit var artworkLayoutManager: GridLayoutManager
@@ -69,6 +78,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
 
         help_button.setOnClickListener { helpTapped() }
         camera_switch_button.setOnClickListener { switchCamerasTapped() }
+        collection_button.setOnClickListener { onContentSelected() }
         camera_capture_button.setOnClickListener { captureImageTapped() }
         delete_capture_button.setOnClickListener { deleteCaptureTapped() }
 
@@ -171,14 +181,19 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
         }
     }
 
-    private fun convertImageTapped(id: Int) {
+    private suspend fun convertImageTapped(id: Int) {
         if (imageCaptured) {
-            val contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
-            val stylizedBitmap = ArtisticStyleTransfer(
-                requireContext(),
-                contentBitmap
-            ).apply(id)
-            content_image.setImageBitmap(stylizedBitmap)
+            withContext(Dispatchers.IO) {
+                contentBitmap?.let {
+                    val stylizedBitmap = ArtisticStyleTransfer(
+                        requireContext(),
+                        it
+                    ).apply(id)
+                    withContext(Dispatchers.Main) {
+                        content_image.setImageBitmap(stylizedBitmap)
+                    }
+                }
+            }
         }
     }
 
@@ -202,20 +217,25 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
             user_thumbnail.setPadding(0, 0, 0, 0)
             user_thumbnail.setImageBitmap(finalBitmap)
 
-
             hideCaptureImageButton()
             hideFlipCameraButton()
             showArtCollectionButton()
             showDeleteCaptureButton()
-            showArtGrid()
         }
     }
 
     override fun onArtworkSelected(id: Int) {
         art_thumbnail.setPadding(0, 0, 0 ,0)
         art_thumbnail.setImageResource(id)
-        convertImageTapped(id)
+        launch {
+            convertImageTapped(id)
+        }
         hideArtGrid()
+    }
+
+    private fun onContentSelected() {
+        showArtGrid()
+        contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
     }
     
     private fun helpTapped() {
@@ -223,9 +243,9 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener{
     }
 
     private fun deleteCaptureTapped() {
+        hideArtGrid()
         hideDeleteCaptureButton()
         hideArtCollectionButton()
-        hideArtGrid()
         showFlipCameraButton()
         showCaptureImageButton()
 
