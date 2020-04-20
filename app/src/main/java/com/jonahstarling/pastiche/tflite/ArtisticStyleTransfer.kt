@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import com.jonahstarling.pastiche.R
 import com.jonahstarling.pastiche.utility.BitmapHelper
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
@@ -18,6 +17,13 @@ import java.nio.ByteBuffer
 class ArtisticStyleTransfer(private val context: Context, private val contentBitmap: Bitmap) {
 
     private val bitmapHelper = BitmapHelper()
+    private var stylePredictModel: MappedByteBuffer?
+    private var styleTransferModel: MappedByteBuffer?
+
+    init {
+        stylePredictModel = loadMappedByteBufferFromAssets("style_predict_quantized_256.tflite")
+        styleTransferModel = loadMappedByteBufferFromAssets("style_transfer_quantized_dynamic.tflite")
+    }
 
     fun apply(id: Int): Bitmap? {
         val styleImageBitmap = BitmapFactory.decodeResource(context.resources, id)
@@ -33,7 +39,10 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
     }
 
     private fun runStylePredictionModel(styleImage: ByteBuffer): TensorBuffer? {
-        loadMappedByteBufferFromAssets("style_predict_quantized_256.tflite")?.let { stylePredictModel ->
+        if (stylePredictModel == null) {
+            stylePredictModel = loadMappedByteBufferFromAssets("style_predict_quantized_256.tflite")
+        }
+        stylePredictModel?.let { stylePredictModel ->
             val interpreter = Interpreter(stylePredictModel)
             val styleBottleneck = TensorBuffer.createFixedSize(intArrayOf(1, 1, 100), DataType.FLOAT32)
 
@@ -46,7 +55,10 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
     }
 
     private fun runStyleTransferModel(contentByteBuffer: ByteBuffer, styleBottleneck: TensorBuffer): Bitmap? {
-        loadMappedByteBufferFromAssets("style_transfer_quantized_dynamic.tflite")?.let { styleTransferModel ->
+        if (styleTransferModel == null) {
+            styleTransferModel = loadMappedByteBufferFromAssets("style_transfer_quantized_dynamic.tflite")
+        }
+        styleTransferModel?.let { styleTransferModel ->
             val interpreter = Interpreter(styleTransferModel)
 
             val input = arrayOf(contentByteBuffer, styleBottleneck.buffer)
