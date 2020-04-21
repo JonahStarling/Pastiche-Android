@@ -74,18 +74,20 @@ class ArtisticStyleTransfer(private val context: Context, private val contentBit
     }
 
     private fun loadMappedByteBufferFromAssets(fileName: String): MappedByteBuffer? {
-        return try {
+        var model: MappedByteBuffer? = null
+        try {
             val fileDescriptor = context.assets.openFd(fileName)
             val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
             val startOffset = fileDescriptor.startOffset
             val declaredLength = fileDescriptor.declaredLength
 
             val fileChannel = inputStream.channel
-            fileChannel.map(READ_ONLY, startOffset, declaredLength)
+            model = fileChannel.map(READ_ONLY, startOffset, declaredLength)
+            inputStream.close()
         } catch (e: IOException) {
             Log.e(TAG, "Error reading model", e)
-            null
         }
+        return model
     }
 
 
