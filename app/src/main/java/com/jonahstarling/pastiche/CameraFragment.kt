@@ -214,6 +214,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
             } else {
                 croppedBitmap
             }
+            imageProxy.close()
             content_image.setImageBitmap(finalBitmap)
             user_thumbnail.setPadding(0, 0, 0, 0)
             user_thumbnail.setImageBitmap(finalBitmap)
