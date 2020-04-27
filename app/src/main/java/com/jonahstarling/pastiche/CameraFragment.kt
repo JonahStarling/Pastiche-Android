@@ -26,7 +26,9 @@ import com.jonahstarling.pastiche.data.ArtworkRepository
 import com.jonahstarling.pastiche.tflite.ArtisticStyleTransfer
 import com.jonahstarling.pastiche.utility.BitmapHelper
 import com.jonahstarling.pastiche.utility.CameraHelper
+import kotlinx.android.synthetic.main.camera_controls.*
 import kotlinx.android.synthetic.main.fragment_camera.*
+import kotlinx.android.synthetic.main.information_header.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
