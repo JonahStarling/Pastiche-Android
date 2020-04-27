@@ -6,8 +6,8 @@
 
     <ImageView
             android:id="@+id/help_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginStart="32dp"
             android:padding="4dp"
             android:scaleType="fitCenter"
@@ -22,8 +22,8 @@
 
     <ImageView
             android:id="@+id/camera_capture_button"
-            android:layout_width="69dp"
-            android:layout_height="69dp"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:tint="#222"
@@ -38,8 +38,8 @@
 
     <ImageView
             android:id="@+id/delete_capture_button"
-            android:layout_width="69dp"
-            android:layout_height="69dp"
+            android:layout_width="92dp"
+            android:layout_height="92dp"
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:tint="#222"
@@ -54,8 +54,8 @@
 
     <ImageView
             android:id="@+id/camera_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginEnd="32dp"
             android:padding="4dp"
             android:scaleType="fitCenter"
@@ -71,8 +71,8 @@
 
     <ImageView
             android:id="@+id/collection_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginEnd="32dp"
             android:padding="4dp"
             android:scaleType="fitCenter"
@@ -88,8 +88,8 @@
 
     <ImageView
             android:id="@+id/camera_switch_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_marginEnd="32dp"
             android:padding="4dp"
             android:scaleType="fitCenter"
