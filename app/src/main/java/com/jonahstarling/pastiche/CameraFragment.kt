@@ -4,10 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -90,6 +92,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         camera_capture_button.setOnClickListener { captureImageTapped() }
         delete_capture_button.setOnClickListener { deleteCaptureTapped() }
         camera_button.setOnClickListener { returnToCamera() }
+        logo.setOnClickListener { navigateToMediumArticle() }
 
         if (hasPermissions(requireContext())) {
             view_finder.post {
@@ -258,6 +261,11 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
 
     private fun dismissHelp() {
         help_dialog.visibility = View.GONE
+    }
+
+    private fun navigateToMediumArticle() {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://medium.com/@starling.jonah/artistic-style-transfer-with-tensorflow-lite-on-android-943af9ca28d8?source=friends_link&sk=8c83cf644c459cdac87242425cc24639"))
+        startActivity(browserIntent)
     }
 
     private fun deleteCaptureTapped() {
