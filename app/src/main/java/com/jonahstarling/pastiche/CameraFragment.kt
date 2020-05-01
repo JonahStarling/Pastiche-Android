@@ -3,6 +3,7 @@ package com.jonahstarling.pastiche
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -15,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.*
 import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -28,6 +30,7 @@ import com.jonahstarling.pastiche.utility.BitmapHelper
 import com.jonahstarling.pastiche.utility.CameraHelper
 import kotlinx.android.synthetic.main.camera_controls.*
 import kotlinx.android.synthetic.main.fragment_camera.*
+import kotlinx.android.synthetic.main.help_dialog.*
 import kotlinx.android.synthetic.main.information_header.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,6 +82,9 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         art_grid.layoutManager = artworkLayoutManager
 
         help_button.setOnClickListener { helpTapped() }
+        faded_background.setOnClickListener { dismissHelp() }
+        dismiss_help.setOnClickListener { dismissHelp() }
+
         camera_switch_button.setOnClickListener { switchCamerasTapped() }
         collection_button.setOnClickListener { onContentSelected() }
         camera_capture_button.setOnClickListener { captureImageTapped() }
@@ -247,7 +253,11 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     }
     
     private fun helpTapped() {
-        // TODO: Add Help popup
+        help_dialog.visibility = View.VISIBLE
+    }
+
+    private fun dismissHelp() {
+        help_dialog.visibility = View.GONE
     }
 
     private fun deleteCaptureTapped() {

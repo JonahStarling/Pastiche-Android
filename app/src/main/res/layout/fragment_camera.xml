@@ -7,7 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <include android:id="@+id/information_header"
+    <include
+            android:id="@+id/information_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -56,7 +57,8 @@
             android:visibility="gone"
             />
 
-    <include android:id="@+id/camera_controls"
+    <include
+            android:id="@+id/camera_controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -65,5 +67,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             layout="@layout/camera_controls"
             />
+
+    <include
+            android:id="@+id/help_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            layout="@layout/help_dialog"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
