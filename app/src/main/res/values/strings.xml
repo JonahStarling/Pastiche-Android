@@ -12,4 +12,18 @@
     <string name="definition"><i><b>Noun:</b> An artistic work in a style that imitates that of another work, artist, or period.\n<b>Verb:</b> Imitate the style of (an artist or work).</i></string>
     <string name="alt_artwork_grid_cell">Artwork Grid Cell</string>
     <string name="alt_camera">Camera</string>
+    <string name="alt_capture_icon">Capture Icon</string>
+    <string name="alt_switch_icon">Switch Icon</string>
+    <string name="alt_delete_icon">Delete Icon</string>
+    <string name="alt_gallery_icon">Gallery Icon</string>
+    <string name="alt_camera_icon">Camera Icon</string>
+    <string name="help_title">What\'s going on?</string>
+    <string name="help_description">First, take a picture of something you want to transform. Second, select a piece of art from our selection of works in the public domain. Lastly, check out your results. Then see what other artworks would do to your picture.</string>
+    <string name="capture_description">Takes a picture</string>
+    <string name="switch_description">Switches between front and back camera</string>
+    <string name="delete_description">Discards your current image</string>
+    <string name="gallery_description">Shows artworks to choose from</string>
+    <string name="camera_description">Shows image you took</string>
+    <string name="help_about">Want to learn more about how your image is changed to look like some piece of art? Tap on the logo to find out more.</string>
+    <string name="help_dismiss">Got it!</string>
 </resources>

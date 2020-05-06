@@ -35,7 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="24sp"
-                    android:text="Help"
+                    android:text="@string/help_title"
                     android:textColor="#222"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="First, take a picture of something you want to make look like a piece of art. Second, select a piece of art from our selection of works in the public domain. Lastly, check out your results. Then see what other artworks would do to your picture."
+                    android:text="@string/help_description"
                     android:textColor="#222"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/help_title"
@@ -61,7 +61,8 @@
                     android:src="@drawable/ic_camera_shutter"
                     android:tint="#222"
                     app:layout_constraintTop_toBottomOf="@id/helpSubtitle"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:contentDescription="@string/alt_capture_icon" />
 
             <TextView
                     android:id="@+id/captureText"
@@ -69,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
-                    android:text="Takes a picture"
+                    android:text="@string/capture_description"
                     android:textColor="#222"
                     app:layout_constraintTop_toTopOf="@id/captureIcon"
                     app:layout_constraintBottom_toBottomOf="@id/captureIcon"
@@ -84,7 +85,8 @@
                     android:src="@drawable/ic_switch_cameras"
                     android:tint="#222"
                     app:layout_constraintTop_toBottomOf="@id/captureIcon"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:contentDescription="@string/alt_switch_icon" />
 
             <TextView
                     android:id="@+id/switchText"
@@ -92,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
-                    android:text="Switches between front and back camera"
+                    android:text="@string/switch_description"
                     android:textColor="#222"
                     app:layout_constraintTop_toTopOf="@id/switchIcon"
                     app:layout_constraintBottom_toBottomOf="@id/switchIcon"
@@ -107,7 +109,8 @@
                     android:src="@drawable/ic_close"
                     android:tint="#222"
                     app:layout_constraintTop_toBottomOf="@id/switchIcon"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:contentDescription="@string/alt_delete_icon" />
 
             <TextView
                     android:id="@+id/deleteText"
@@ -115,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
-                    android:text="Discards your current image"
+                    android:text="@string/delete_description"
                     android:textColor="#222"
                     app:layout_constraintTop_toTopOf="@id/deleteIcon"
                     app:layout_constraintBottom_toBottomOf="@id/deleteIcon"
@@ -130,7 +133,8 @@
                     android:src="@drawable/ic_gallery_black"
                     android:tint="#222"
                     app:layout_constraintTop_toBottomOf="@id/deleteIcon"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:contentDescription="@string/alt_gallery_icon" />
 
             <TextView
                     android:id="@+id/galleryText"
@@ -138,7 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
-                    android:text="Shows artworks to choose from"
+                    android:text="@string/gallery_description"
                     android:textColor="#222"
                     app:layout_constraintTop_toTopOf="@id/galleryIcon"
                     app:layout_constraintBottom_toBottomOf="@id/galleryIcon"
@@ -153,7 +157,8 @@
                     android:src="@drawable/ic_camera"
                     android:tint="#222"
                     app:layout_constraintTop_toBottomOf="@id/galleryIcon"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:contentDescription="@string/alt_camera_icon" />
 
             <TextView
                     android:id="@+id/cameraText"
@@ -161,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textSize="12sp"
-                    android:text="Shows image you took"
+                    android:text="@string/camera_description"
                     android:textColor="#222"
                     app:layout_constraintTop_toTopOf="@id/cameraIcon"
                     app:layout_constraintBottom_toBottomOf="@id/cameraIcon"
@@ -173,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="Want to learn more about how your image is changed to look like some piece of art? Tap on the logo to find out more."
+                    android:text="@string/help_about"
                     android:textColor="#222"
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/cameraIcon"
@@ -185,7 +190,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?android:attr/selectableItemBackground"
-                    android:text="Got it!"
+                    android:text="@string/help_dismiss"
                     android:textColor="#222"
                     app:layout_constraintTop_toBottomOf="@id/helpAbout"
                     app:layout_constraintStart_toStartOf="parent"
