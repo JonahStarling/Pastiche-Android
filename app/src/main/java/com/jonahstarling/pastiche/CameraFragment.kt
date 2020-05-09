@@ -190,6 +190,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
                 viewFinder.postDelayed(
                     { viewFinder.foreground = null }, ANIMATION_FAST_MILLIS)
             }, ANIMATION_SLOW_MILLIS)
+            progressBar.visibility = View.VISIBLE
         }
     }
 
@@ -202,6 +203,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
                         it
                     ).apply(id)
                     withContext(Dispatchers.Main) {
+                        progressBar.visibility = View.GONE
                         convertedBitmap = stylizedBitmap
                         contentImage.setImageBitmap(stylizedBitmap)
                         saveButton.isEnabled = true
@@ -218,6 +220,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     @SuppressLint("UnsafeExperimentalUsageError")
     private fun displayTakenPicture(imageProxy: ImageProxy) {
         imageProxy.image?.let { image ->
+            progressBar.visibility = View.GONE
             contentImage.visibility = View.VISIBLE
 
             // Fix the image via rotating, cropping, and flipping (only front camera)
@@ -261,10 +264,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         convertedBitmap = null
         artThumbnail.setPadding(0, 0, 0 ,0)
         artThumbnail.setImageResource(id)
-        launch {
-            convertImage(id)
 
-        }
         artGrid.visibility = View.GONE
         cameraButton.visibility = View.GONE
         helpButton.visibility = View.GONE
@@ -272,6 +272,11 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         collectionButton.visibility = View.VISIBLE
         saveButton.visibility = View.VISIBLE
         saveButton.isEnabled = false
+
+        progressBar.visibility = View.VISIBLE
+        launch {
+            convertImage(id)
+        }
     }
 
     private fun onContentSelected() {
