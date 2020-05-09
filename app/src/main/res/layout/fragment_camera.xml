@@ -48,6 +48,7 @@
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:indeterminateTint="#3F51B5"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="@id/viewFinder"
             app:layout_constraintBottom_toBottomOf="@id/viewFinder"
