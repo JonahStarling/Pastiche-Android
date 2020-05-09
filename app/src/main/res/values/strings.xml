@@ -26,4 +26,5 @@
     <string name="camera_description">Shows image you took</string>
     <string name="help_about">Want to learn more about how your image is changed to look like some piece of art? Tap on the logo to find out more.</string>
     <string name="help_dismiss">Got it!</string>
+    <string name="alt_save_button">Save Button</string>
 </resources>

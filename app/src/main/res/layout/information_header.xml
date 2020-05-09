@@ -15,7 +15,7 @@
             app:srcCompat="@drawable/pastiche_big_logo" />
 
     <ImageView
-            android:id="@+id/user_thumbnail"
+            android:id="@+id/userThumbnail"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
@@ -23,29 +23,29 @@
             android:contentDescription="@string/user_thumbnail"
             android:padding="10dp"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@id/plus_sign"
+            app:layout_constraintEnd_toStartOf="@id/plusSign"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_person_white" />
 
     <ImageView
-            android:id="@+id/plus_sign"
+            android:id="@+id/plusSign"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/plus"
             android:scaleType="fitCenter"
             android:tint="#222"
-            app:layout_constraintBottom_toBottomOf="@id/user_thumbnail"
-            app:layout_constraintEnd_toStartOf="@id/art_thumbnail"
+            app:layout_constraintBottom_toBottomOf="@id/userThumbnail"
+            app:layout_constraintEnd_toStartOf="@id/artThumbnail"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintTop_toTopOf="@id/user_thumbnail"
+            app:layout_constraintTop_toTopOf="@id/userThumbnail"
             app:layout_constraintVertical_bias="0.5"
             app:srcCompat="@drawable/ic_add" />
 
     <ImageView
-            android:id="@+id/art_thumbnail"
+            android:id="@+id/artThumbnail"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"

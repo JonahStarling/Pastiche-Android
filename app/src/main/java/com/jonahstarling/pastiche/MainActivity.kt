@@ -15,8 +15,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        main_activity.postDelayed({
-            main_activity.systemUiVisibility = FLAGS_FULLSCREEN
+        mainActivity.postDelayed({
+            mainActivity.systemUiVisibility = FLAGS_FULLSCREEN
         }, IMMERSIVE_FLAG_TIMEOUT)
     }
 

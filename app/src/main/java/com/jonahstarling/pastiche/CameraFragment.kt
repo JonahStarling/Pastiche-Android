@@ -3,7 +3,6 @@ package com.jonahstarling.pastiche
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.*
@@ -11,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Rational
@@ -18,7 +18,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.*
 import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -56,7 +55,9 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
     private var imageCaptured = false
+    private var imageConverted = false
     private var contentBitmap: Bitmap? = null
+    private var convertedBitmap: Bitmap? = null
 
     private lateinit var artworkAdapter: ArtworkAdapter
     private lateinit var artworkLayoutManager: GridLayoutManager
@@ -80,22 +81,23 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         artworkAdapter = ArtworkAdapter(this.requireContext(), ArtworkRepository.localArtworks)
         artworkAdapter.artAdapterListener = this
         artworkLayoutManager = GridLayoutManager(activity, 3, GridLayoutManager.HORIZONTAL, false)
-        art_grid.adapter = artworkAdapter
-        art_grid.layoutManager = artworkLayoutManager
+        artGrid.adapter = artworkAdapter
+        artGrid.layoutManager = artworkLayoutManager
 
-        help_button.setOnClickListener { helpTapped() }
-        faded_background.setOnClickListener { dismissHelp() }
-        dismiss_help.setOnClickListener { dismissHelp() }
+        helpButton.setOnClickListener { helpTapped() }
+        fadedBackground.setOnClickListener { dismissHelp() }
+        dismissHelp.setOnClickListener { dismissHelp() }
 
-        camera_switch_button.setOnClickListener { switchCamerasTapped() }
-        collection_button.setOnClickListener { onContentSelected() }
-        camera_capture_button.setOnClickListener { captureImageTapped() }
-        delete_capture_button.setOnClickListener { deleteCaptureTapped() }
-        camera_button.setOnClickListener { returnToCamera() }
+        cameraSwitchButton.setOnClickListener { switchCamerasTapped() }
+        collectionButton.setOnClickListener { onContentSelected() }
+        cameraCaptureButton.setOnClickListener { captureImageTapped() }
+        deleteCaptureButton.setOnClickListener { deleteCaptureTapped() }
+        cameraButton.setOnClickListener { returnToCamera() }
+        saveButton.setOnClickListener { saveImage() }
         logo.setOnClickListener { navigateToMediumArticle() }
 
         if (hasPermissions(requireContext())) {
-            view_finder.post {
+            viewFinder.post {
                 bindCamera()
             }
         }
@@ -106,7 +108,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull()) {
-                view_finder.post {
+                viewFinder.post {
                     bindCamera()
                 }
             } else {
@@ -119,9 +121,9 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     // Declare and bind preview and capture use cases
     private fun bindCamera() {
         // Get screen metrics used to setup camera for full screen resolution
-        val metrics = DisplayMetrics().also { view_finder.display.getRealMetrics(it) }
+        val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
         val screenAspectRatio = cameraHelper.aspectRatio(metrics.widthPixels, metrics.heightPixels)
-        val rotation = view_finder.display.rotation
+        val rotation = viewFinder.display.rotation
 
         // Bind the CameraProvider to the LifeCycleOwner
         val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
@@ -134,7 +136,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
                 .setTargetAspectRatio(screenAspectRatio)
                 .setTargetRotation(rotation)
                 .build()
-            preview?.setSurfaceProvider(view_finder.previewSurfaceProvider)
+            preview?.setSurfaceProvider(viewFinder.previewSurfaceProvider)
 
             // Setup the Image Capture so the user can take a photo
             imageCapture = ImageCapture.Builder()
@@ -185,10 +187,10 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
             imageCapture.takePicture(mainExecutor, imageCapturedListener)
 
             // Display a "flash" animation to indicate that photo was captured
-            view_finder.postDelayed({
-                view_finder.foreground = ColorDrawable(Color.WHITE)
-                view_finder.postDelayed(
-                    { view_finder.foreground = null }, ANIMATION_FAST_MILLIS)
+            viewFinder.postDelayed({
+                viewFinder.foreground = ColorDrawable(Color.WHITE)
+                viewFinder.postDelayed(
+                    { viewFinder.foreground = null }, ANIMATION_FAST_MILLIS)
             }, ANIMATION_SLOW_MILLIS)
         }
     }
@@ -202,7 +204,10 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
                         it
                     ).apply(id)
                     withContext(Dispatchers.Main) {
-                        content_image.setImageBitmap(stylizedBitmap)
+                        convertedBitmap = stylizedBitmap
+                        contentImage.setImageBitmap(stylizedBitmap)
+                        saveButton.isEnabled = true
+                        imageConverted = true
                     }
                 }
             }
@@ -215,7 +220,7 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     @SuppressLint("UnsafeExperimentalUsageError")
     private fun displayTakenPicture(imageProxy: ImageProxy) {
         imageProxy.image?.let { image ->
-            content_image.visibility = View.VISIBLE
+            contentImage.visibility = View.VISIBLE
 
             // Fix the image via rotating, cropping, and flipping (only front camera)
             val rotatedBitmap = bitmapHelper.rotateImage(bitmapHelper.imageToBitmap(image), imageProxy.imageInfo.rotationDegrees.toFloat())
@@ -226,41 +231,62 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
                 croppedBitmap
             }
             imageProxy.close()
-            content_image.setImageBitmap(finalBitmap)
-            user_thumbnail.setPadding(0, 0, 0, 0)
-            user_thumbnail.setImageBitmap(finalBitmap)
+            contentImage.setImageBitmap(finalBitmap)
+            userThumbnail.setPadding(0, 0, 0, 0)
+            userThumbnail.setImageBitmap(finalBitmap)
 
-            hideCaptureImageButton()
-            hideFlipCameraButton()
-            showArtCollectionButton()
-            showDeleteCaptureButton()
-            contentBitmap = (content_image.drawable as BitmapDrawable).bitmap
+            cameraCaptureButton.visibility = View.GONE
+            cameraSwitchButton.visibility = View.GONE
+
+            collectionButton.visibility = View.VISIBLE
+            deleteCaptureButton.visibility = View.VISIBLE
+            contentBitmap = (contentImage.drawable as BitmapDrawable).bitmap
+        }
+    }
+
+    fun saveImage() {
+        context?.let {
+            val savedImageURL = MediaStore.Images.Media.insertImage(
+                context?.contentResolver,
+                convertedBitmap,
+                "Pastiche",
+                "Image from Pastiche"
+            )
         }
     }
 
     override fun onArtworkSelected(id: Int) {
-        art_thumbnail.setPadding(0, 0, 0 ,0)
-        art_thumbnail.setImageResource(id)
+        convertedBitmap = null
+        artThumbnail.setPadding(0, 0, 0 ,0)
+        artThumbnail.setImageResource(id)
         launch {
             convertImage(id)
+
         }
-        hideArtGrid()
-        hideCameraButton()
-        showArtCollectionButton()
+        artGrid.visibility = View.GONE
+        cameraButton.visibility = View.GONE
+        helpButton.visibility = View.GONE
+
+        collectionButton.visibility = View.VISIBLE
+        saveButton.visibility = View.VISIBLE
+        saveButton.isEnabled = false
     }
 
     private fun onContentSelected() {
-        hideArtCollectionButton()
-        showArtGrid()
-        showCameraButton()
+        collectionButton.visibility = View.GONE
+        saveButton.visibility = View.GONE
+
+        artGrid.visibility = View.VISIBLE
+        cameraButton.visibility = View.VISIBLE
+        helpButton.visibility = View.VISIBLE
     }
     
     private fun helpTapped() {
-        help_dialog.visibility = View.VISIBLE
+        helpDialog.visibility = View.VISIBLE
     }
 
     private fun dismissHelp() {
-        help_dialog.visibility = View.GONE
+        helpDialog.visibility = View.GONE
     }
 
     private fun navigateToMediumArticle() {
@@ -269,85 +295,39 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     }
 
     private fun deleteCaptureTapped() {
-        hideArtGrid()
-        hideDeleteCaptureButton()
-        hideArtCollectionButton()
-        hideCameraButton()
-        showFlipCameraButton()
-        showCaptureImageButton()
+        artGrid.visibility = View.GONE
+        deleteCaptureButton.visibility = View.GONE
+        collectionButton.visibility = View.GONE
+        cameraButton.visibility = View.GONE
+        saveButton.visibility = View.GONE
 
-        content_image.visibility = View.INVISIBLE
-        content_image.setImageBitmap(null)
+        cameraSwitchButton.visibility = View.VISIBLE
+        cameraCaptureButton.visibility = View.VISIBLE
+        helpButton.visibility = View.VISIBLE
+
+        contentImage.visibility = View.INVISIBLE
+        contentImage.setImageBitmap(null)
+        imageConverted = false
+        contentBitmap = null
+        convertedBitmap = null
         val paddingDp = (resources.displayMetrics.density * 10).toInt()
-        art_thumbnail.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
-        art_thumbnail.setImageResource(R.drawable.ic_gallery_white)
-        user_thumbnail.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
-        user_thumbnail.setImageResource(R.drawable.ic_person_white)
+        artThumbnail.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
+        artThumbnail.setImageResource(R.drawable.ic_gallery_white)
+        userThumbnail.setPadding(paddingDp, paddingDp, paddingDp, paddingDp)
+        userThumbnail.setImageResource(R.drawable.ic_person_white)
     }
 
     private fun returnToCamera() {
-        hideArtGrid()
-        hideCameraButton()
-        showArtCollectionButton()
-    }
+        artGrid.visibility = View.GONE
+        cameraButton.visibility = View.GONE
 
-    private fun showCaptureImageButton() {
-        camera_capture_button.visibility = View.VISIBLE
-        camera_capture_button.isEnabled = true
-        imageCaptured = false
-    }
+        collectionButton.visibility = View.VISIBLE
+        if (imageConverted) {
+            helpButton.visibility = View.GONE
 
-    private fun hideCaptureImageButton() {
-        camera_capture_button.visibility = View.INVISIBLE
-        camera_capture_button.isEnabled = false
-    }
-
-    private fun showDeleteCaptureButton() {
-        delete_capture_button.visibility = View.VISIBLE
-        delete_capture_button.isEnabled = true
-    }
-
-    private fun hideDeleteCaptureButton() {
-        delete_capture_button.visibility = View.INVISIBLE
-        delete_capture_button.isEnabled = false
-    }
-
-    private fun showFlipCameraButton() {
-        camera_switch_button.visibility = View.VISIBLE
-        camera_switch_button.isEnabled = true
-    }
-
-    private fun hideFlipCameraButton() {
-        camera_switch_button.visibility = View.INVISIBLE
-        camera_switch_button.isEnabled = false
-    }
-
-    private fun showArtCollectionButton() {
-        collection_button.visibility = View.VISIBLE
-        collection_button.isEnabled = true
-    }
-
-    private fun hideArtCollectionButton() {
-        collection_button.visibility = View.INVISIBLE
-        collection_button.isEnabled = false
-    }
-
-    private fun showArtGrid() {
-        art_grid.visibility = View.VISIBLE
-    }
-
-    private fun hideArtGrid() {
-        art_grid.visibility = View.GONE
-    }
-
-    private fun showCameraButton() {
-        camera_button.visibility = View.VISIBLE
-        camera_button.isEnabled = true
-    }
-
-    private fun hideCameraButton() {
-        camera_button.visibility = View.GONE
-        camera_button.isEnabled = false
+            saveButton.visibility = View.VISIBLE
+            saveButton.isEnabled = true
+        }
     }
 
     companion object {

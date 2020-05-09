@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-            android:id="@+id/help_button"
+            android:id="@+id/helpButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="32dp"
@@ -21,7 +21,24 @@
             />
 
     <ImageView
-            android:id="@+id/camera_capture_button"
+            android:id="@+id/saveButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="32dp"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:background="@android:color/transparent"
+            android:tint="#222"
+            android:visibility="gone"
+            android:contentDescription="@string/alt_save_button"
+            app:srcCompat="@drawable/ic_save"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    <ImageView
+            android:id="@+id/cameraCaptureButton"
             android:layout_width="69dp"
             android:layout_height="69dp"
             android:scaleType="fitCenter"
@@ -37,14 +54,14 @@
             />
 
     <ImageView
-            android:id="@+id/delete_capture_button"
+            android:id="@+id/deleteCaptureButton"
             android:layout_width="69dp"
             android:layout_height="69dp"
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:tint="#222"
             android:contentDescription="@string/alt_capture"
-            android:visibility="invisible"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_close"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -53,7 +70,7 @@
             />
 
     <ImageView
-            android:id="@+id/camera_button"
+            android:id="@+id/cameraButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="32dp"
@@ -61,7 +78,7 @@
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:tint="#222"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:contentDescription="@string/alt_camera"
             app:srcCompat="@drawable/ic_camera"
             app:layout_constraintRight_toRightOf="parent"
@@ -70,7 +87,7 @@
             />
 
     <ImageView
-            android:id="@+id/collection_button"
+            android:id="@+id/collectionButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="32dp"
@@ -78,7 +95,7 @@
             android:scaleType="fitCenter"
             android:background="@android:color/transparent"
             android:tint="#222"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:contentDescription="@string/alt_gallery"
             app:srcCompat="@drawable/ic_gallery_black"
             app:layout_constraintRight_toRightOf="parent"
@@ -87,7 +104,7 @@
             />
 
     <ImageView
-            android:id="@+id/camera_switch_button"
+            android:id="@+id/cameraSwitchButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="32dp"

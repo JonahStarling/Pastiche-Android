@@ -8,7 +8,7 @@
         android:layout_height="match_parent">
 
     <include
-            android:id="@+id/information_header"
+            android:id="@+id/informationHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -18,58 +18,58 @@
             />
 
     <androidx.camera.view.PreviewView
-            android:id="@+id/view_finder"
+            android:id="@+id/viewFinder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="40dp"
             android:background="#222"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toBottomOf="@id/information_header"
+            app:layout_constraintTop_toBottomOf="@id/informationHeader"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="visible"
             />
 
     <ImageView
-            android:id="@+id/content_image"
+            android:id="@+id/contentImage"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="#222"
             android:contentDescription="@string/alt_content_image"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toTopOf="@id/view_finder"
-            app:layout_constraintBottom_toBottomOf="@id/view_finder"
+            app:layout_constraintTop_toTopOf="@id/viewFinder"
+            app:layout_constraintBottom_toBottomOf="@id/viewFinder"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="gone"
             />
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/art_grid"
+            android:id="@+id/artGrid"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="#222"
             app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toTopOf="@id/view_finder"
-            app:layout_constraintBottom_toBottomOf="@id/view_finder"
+            app:layout_constraintTop_toTopOf="@id/viewFinder"
+            app:layout_constraintBottom_toBottomOf="@id/viewFinder"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="gone"
             />
 
     <include
-            android:id="@+id/camera_controls"
+            android:id="@+id/cameraControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_finder"
+            app:layout_constraintTop_toBottomOf="@id/viewFinder"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             layout="@layout/camera_controls"
             />
 
     <include
-            android:id="@+id/help_dialog"
+            android:id="@+id/helpDialog"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
