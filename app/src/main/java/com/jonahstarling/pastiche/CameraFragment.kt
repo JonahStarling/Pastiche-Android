@@ -14,9 +14,7 @@ import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Rational
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.core.Camera
@@ -244,14 +242,18 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
         }
     }
 
-    fun saveImage() {
+    private fun saveImage() {
         context?.let {
-            val savedImageURL = MediaStore.Images.Media.insertImage(
+            MediaStore.Images.Media.insertImage(
                 context?.contentResolver,
                 convertedBitmap,
                 "Pastiche",
                 "Image from Pastiche"
             )
+            val savedImageToast = Toast.makeText(context, "Image Saved to Gallery", Toast.LENGTH_SHORT)
+            val yOffset = ((contentImage.y + contentImage.height / 2) - resources.displayMetrics.heightPixels / 2).toInt()
+            savedImageToast.setGravity(Gravity.CENTER, 0, yOffset)
+            savedImageToast.show()
         }
     }
 
