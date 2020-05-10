@@ -1,6 +1,7 @@
 package com.jonahstarling.pastiche
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -15,10 +16,12 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Rational
 import android.view.*
+import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -290,10 +293,36 @@ class CameraFragment : Fragment(), ArtworkAdapter.OnArtSelectedListener, Corouti
     
     private fun helpTapped() {
         helpDialog.visibility = View.VISIBLE
+        val helpAnimator = ValueAnimator.ofFloat(0.0f, 1.0f)
+        helpAnimator.duration = 200L
+        helpAnimator.interpolator = LinearInterpolator()
+        helpAnimator.addUpdateListener {
+            fadedBackground.alpha = (helpAnimator.animatedValue as Float) * 0.7f
+            helpCard.alpha = helpAnimator.animatedValue as Float
+
+            val helpCardParams = helpCard.layoutParams as ConstraintLayout.LayoutParams
+            helpCardParams.verticalBias = 1.0f - ((helpAnimator.animatedValue as Float) / 2.0f)
+            helpCard.layoutParams = helpCardParams
+        }
+        helpAnimator.start()
     }
 
     private fun dismissHelp() {
-        helpDialog.visibility = View.GONE
+        val helpAnimator = ValueAnimator.ofFloat(1.0f, 0.0f)
+        helpAnimator.duration = 200L
+        helpAnimator.interpolator = LinearInterpolator()
+        helpAnimator.addUpdateListener {
+            fadedBackground.alpha = (helpAnimator.animatedValue as Float) * 0.7f
+            helpCard.alpha = helpAnimator.animatedValue as Float
+
+            val helpCardParams = helpCard.layoutParams as ConstraintLayout.LayoutParams
+            helpCardParams.verticalBias = 1.0f - ((helpAnimator.animatedValue as Float) / 2.0f)
+            helpCard.layoutParams = helpCardParams
+            if (helpAnimator.animatedValue == 0.0f) {
+                helpDialog.visibility = View.GONE
+            }
+        }
+        helpAnimator.start()
     }
 
     private fun navigateToMediumArticle() {
